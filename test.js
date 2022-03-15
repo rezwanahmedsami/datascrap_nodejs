@@ -33,7 +33,7 @@ puppeteer.launch({
         await page.solveRecaptchas();
     }
     console.log("delayig...")
-    await page.waitForTimeout(20000);
+    // await page.waitForTimeout(20000);
  
 //   await page.screenshot({ path: 'response.png', fullPage: true })
 const data = await page.evaluate(() => document.querySelector('*').outerHTML);
