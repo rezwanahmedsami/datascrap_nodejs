@@ -22,13 +22,14 @@ let ProxyUrl = 'http://5.79.73.131:13010'
 let executablePathLocalMac = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 let executablePathServer = "google-chrome";
 puppeteer.launch({ 
-    headless: true,
-    executablePath: executablePathServer,
-    args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
+    headless: false,
+    executablePath: executablePathLocalMac,
+    // args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
 }).then(async browser => {
   const page = await browser.newPage();
 
-  await page.goto('https://www.wilko.com/en-uk', {waitUntil: "networkidle2"})
+  await page.goto('https://www.wilko.com/en-uk', {waitUntil: "domcontentloaded"})
+  await page.goto('https://www.wilko.com/en-uk/storage/shoes-clothing-storage/clothes-storage/c/1438', {waitUntil: "domcontentloaded"})
   // That's it, a single line of code to solve reCAPTCHAs 🎉
   const cloudFlareWrapper = await page.$('#cf-wrapper');
     if (cloudFlareWrapper) {
@@ -41,6 +42,6 @@ puppeteer.launch({
 //   await page.screenshot({ path: 'response.png', fullPage: true })
 const data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
-  console.log(data);
+  console.log("done 1");
   await browser.close()
 })
