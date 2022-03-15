@@ -21,6 +21,7 @@ let ProxyUrl = 'http://5.79.73.131:13010'
 // puppeteer usage as normal
 puppeteer.launch({ 
     headless: true,
+    executablePath: "google-chrome"
     // args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
 }).then(async browser => {
   const page = await browser.newPage();
