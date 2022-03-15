@@ -24,9 +24,9 @@ let executablePathServer = "google-chrome";
 
 const GetHtmlContent = async (url) =>{
     await puppeteer.launch({ 
-        headless: true,
-        executablePath: executablePathServer,
-        args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
+        headless: false,
+        executablePath: executablePathLocalMac,
+        // args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
     }).then(async browser => {
       const page = await browser.newPage();
     
@@ -37,7 +37,7 @@ const GetHtmlContent = async (url) =>{
             await page.waitForSelector('#cf-hcaptcha-container');
             await page.solveRecaptchas();
         }
-        console.log("Loading content...")
+        console.log("delayig...")
         await page.waitForTimeout(20000);
      
     //   await page.screenshot({ path: 'response.png', fullPage: true })
