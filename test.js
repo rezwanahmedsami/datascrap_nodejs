@@ -19,9 +19,11 @@ puppeteer.use(
 )
 let ProxyUrl = 'http://5.79.73.131:13010'
 // puppeteer usage as normal
+let executablePathLocalMac = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+let executablePathServer = "google-chrome";
 puppeteer.launch({ 
     headless: true,
-    executablePath: "google-chrome",
+    executablePath: executablePathServer,
     args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
 }).then(async browser => {
   const page = await browser.newPage();
