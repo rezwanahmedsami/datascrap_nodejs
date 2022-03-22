@@ -2,6 +2,7 @@
 // it augments the installed puppeteer with plugin functionality
 const pluginStealth  = require('puppeteer-extra-plugin-stealth');
 const puppeteer = require('puppeteer-extra')
+var request = require('request');
 
 // add recaptcha plugin and provide it your 2captcha token (= their apiKey)
 // 2captcha is the builtin solution provider but others would work as well.
@@ -12,7 +13,7 @@ puppeteer.use(
   RecaptchaPlugin({
     provider: {
       id: '2captcha',
-      token: '610bbe106db3df6de8562f73da722ad8' // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
+      token: '6d170d2df6c3d6147c9dc6af5316a8c7' // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
     },
     visualFeedback: true // colorize reCAPTCHAs (violet = detected, green = solved)
   })
@@ -42,45 +43,47 @@ const GetHtmlContent = async (url) =>{
      
     //   await page.screenshot({ path: 'response.png', fullPage: true })
     const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-    
-    console.log("Completed url: ", url);
-      await browser.close()
+
+    request.post(
+      'https://www.rightdev.co.uk/datascraping/inserthtml.php',
+      { form: { url: url, html: data } },
+      function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+              let json = JSON.parse(body);
+              if (json.status == true) {
+                console.log("Data Inserted in database");
+              }else{
+                console.log("Data Insert failed in database");
+              }
+          }
+      }
+  );
+  console.log("Completed url: ", url);
+      await browser.close();
     })
 }
 
 const Run_Proc_all = async () =>{
-  let urls = [
-  'https://www.wilko.com/en-uk', 
-  'https://www.wilko.com/en-uk/storage/shoes-clothing-storage/clothes-storage/c/1438',
-  'https://www.wilko.com/en-uk/home/household/c/370',
-  'https://www.wilko.com/en-uk/pets/c/1061',
-  'https://www.wilko.com/en-uk/pets/small-pets/c/1097',
-  'https://www.wilko.com/en-uk/health-beauty/mens/mens-toiletries/mens-skincare/c/1494',
-  'https://www.wilko.com/en-uk/garden-outdoor/garden-buildings/greenhouses-accessories/greenhouses/c/60',
-  'https://www.wilko.com/en-uk/wilko-mini-greenhouse-large/p/0476577',
-  'https://www.wilko.com/en-uk/wilko-pvc-tomato-greenhouse-with-pvc-cover/p/0476576',
-  'https://www.wilko.com/en-uk/wilko-mini-greenhouse/p/0476578',
-  'https://www.wilko.com/en-uk/palram-canopia-harmony-6-x-10ft-silver-greenhouse/p/0527974',
-  'https://www.wilko.com/en-uk/palram-canopia-harmony-6-x-6ft-green-greenhouse/p/0527977',
-  'https://www.wilko.com/en-uk/palram-canopia-harmony-6-x-10ft-green-greenhouse/p/0527973',
-  'https://www.wilko.com/en-uk/palram-canopia-balance-8-x-12ft-extended-greenhouse/p/0527965',
-  'https://www.wilko.com/en-uk/palram-canopia-mythos-6-x-4ft-green-greenhouse/p/0527985',
-  'https://www.wilko.com/en-uk/palram-mythos-silver-6-x-4ft-greenhouse/p/0413533',
-  'https://www.wilko.com/en-uk/palram-mythos-silver-6-x-8ft-greenhouse/p/0413535',
-  'https://www.wilko.com/en-uk/palram-canopia-harmony-6-x-6ft-silver-greenhouse/p/0527978',
-  'https://www.wilko.com/en-uk/palram-mythos-silver-6-x-10ft-greenhouse/p/0413536',
-  'https://www.wilko.com/en-uk/palram-hybrid-green-6-x-4ft-greenhouse/p/0499162'
-]
 
-  await GetHtmlContent(urls[0]);
-  await GetHtmlContent(urls[1]);
-  await GetHtmlContent(urls[2]);
-  await GetHtmlContent(urls[3]);
-  await GetHtmlContent(urls[4]);
-  await GetHtmlContent(urls[5]);
-  // for (let i = 0; i < urls.length; i++) {
-  //   await GetHtmlContent(urls[i]);
-  // }
+  request.get(
+    'https://www.rightdev.co.uk/datascraping/geturls.php',
+    async function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            let urls = JSON.parse(body);    
+            let l = 2 
+            let n = l;
+            for (let i = 0; i < urls.length; i++) {
+               
+               if (n == i) {
+                await GetHtmlContent(urls[i].url);
+                n += l;
+               }else{
+                GetHtmlContent(urls[i].url);
+               }
+            }   
+        }
+    }
+  );
 }
 
 Run_Proc_all();

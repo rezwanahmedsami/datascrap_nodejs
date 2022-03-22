@@ -19,7 +19,7 @@ const GetHtmlContent = async (url) =>{
     RecaptchaPlugin({
       provider: {
         id: '2captcha',
-        token: '610bbe106db3df6de8562f73da722ad8' // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
+        token: '6d170d2df6c3d6147c9dc6af5316a8c7' // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
       },
       visualFeedback: true // colorize reCAPTCHAs (violet = detected, green = solved)
     })
@@ -44,7 +44,7 @@ const GetHtmlContent = async (url) =>{
      
     //   await page.screenshot({ path: 'response.png', fullPage: true })
     const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-    
+      console.log(data);
       console.log("Completed url: ", url);
       await browser.close()
     })
@@ -81,11 +81,11 @@ const Run_Proc_all = async () =>{
   //   await GetHtmlContent(urls[i]);
   // }
   GetHtmlContent(urls[0]);
-  GetHtmlContent(urls[1]);
-  GetHtmlContent(urls[2]);
-  GetHtmlContent(urls[3]);
-  GetHtmlContent(urls[4]);
-  GetHtmlContent(urls[5]);
+  // GetHtmlContent(urls[1]);
+  // GetHtmlContent(urls[2]);
+  // GetHtmlContent(urls[3]);
+  // GetHtmlContent(urls[4]);
+  // GetHtmlContent(urls[5]);
 }
 
 Run_Proc_all();
