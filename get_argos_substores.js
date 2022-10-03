@@ -24,7 +24,7 @@ let executablePathLocalMac = "/Applications/Google Chrome.app/Contents/MacOS/Goo
 let executablePathServer = "google-chrome";
 
 const GetHtmlContent = async (url) =>{
-    await puppeteer.launch({ 
+    await puppeteer.launch({
         headless: false,
         executablePath: executablePathLocalMac,
         // args: ["--no-sandbox", "--proxy-server="+ProxyUrl]
@@ -39,37 +39,43 @@ const GetHtmlContent = async (url) =>{
             await page.solveRecaptchas();
         }
         console.log("loading content...")
-        await page.waitForTimeout(20000);
+        await page.waitForTimeout(10000);
      
     //   await page.screenshot({ path: 'response.png', fullPage: true })
     // const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+    await page.click('#consent_prompt_submit');
+    await page.click('.btn-see-all-stores');
     const data = await page.evaluate(() => {
-        let loc = document.getElementsByTagName('loc');
+        let store_url = document.querySelectorAll('.azsl-link');
+        // console.log(store_url);
         let urls = [];
-        for (let i = 0; i < 5; i++) {
-          urls.push(loc[i].textContent);
+        for (let i = 0; i < store_url.length; i++) {
+            // console.log(store_url[i].href);
+          urls.push(store_url[i].href);
         }
+        // console.log(urls);
         return urls;
     });
 
-    console.log(data);
-
-  //   request.post(
-  //     'https://www.rightdev.co.uk/datascraping/inserthtml.php',
-  //     { form: { caturl: JSON.stringify(data) } },
-  //     function (error, response, body) {
-  //         if (!error && response.statusCode == 200) {
-  //             let json = JSON.parse(body);
-  //             // if (json.status == true) {
-  //             //   console.log("Data Inserted in database");
-  //             // }else{
-  //             //   console.log("Data Insert failed in database");
-  //             // }
-  //             console.log(json);
-  //         }
-  //     }
-  // );
-  // console.log("Completed url: ", url);
+    let post_data = { store_urls: JSON.stringify(data) };
+    // console.log(data);
+    console.log("Inserting data.....");
+    request.post(
+      'https://near-me.co.uk/store-extractor/argos/get_sub_stores.php',
+      { form: post_data },
+      function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            //   let json = JSON.parse(body);
+              // if (json.status == true) {
+              //   console.log("Data Inserted in database");
+              // }else{
+              //   console.log("Data Insert failed in database");
+              // }
+              console.log(body);
+          }
+      }
+  );
+  console.log("Completed url: ", url);
       await browser.close();
     })
 }
@@ -98,4 +104,4 @@ const GetHtmlContent = async (url) =>{
 // }
 
 // Run_Proc_all();
-GetHtmlContent("https://www.onbuy.com/gb/sitemap-category.xml");
+GetHtmlContent("https://www.argos.co.uk/stores/");
